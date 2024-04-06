@@ -29,21 +29,25 @@ const SingUp = () => {
       <form onSubmit={register}>
         <h2>Create an account</h2>
         <input
+          placeholder="Please enter your email"
           value={email}
           onChange={e => setEmail(e.target.value)}
           type="email"
         />
         <input
+          placeholder="Please enter your password"
           value={password}
           onChange={e => setPassword(e.target.value)}
           type="password"
         />
         <input
+          placeholder="Please enter your password again"
           value={copyPassword}
           onChange={e => setCopyPassword(e.target.value)}
           type="password"
         />
         <button>Create</button>
+        {error ? <p style={{ color: 'red' }}>{error}</p> : ''}
       </form>
     </div>
   );

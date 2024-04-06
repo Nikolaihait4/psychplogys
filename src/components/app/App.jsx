@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { fetchPsychologists } from '../../services/api';
 import Psychologist from 'components/psychologist/Psychologist';
-import AuthForm from 'components/authForm/AuthForm';
+// import AuthForm from 'components/authForm/AuthForm';
 import SingUp from 'components/auth/SingUp';
+import SingIn from 'components/auth/SindIn';
+import AuthDetails from 'components/auth/AuthDetails';
 
 export const App = () => {
   const [psychologists, setPsychologists] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     fetchPsychologists()
@@ -22,25 +23,14 @@ export const App = () => {
       });
   }, []);
 
-  // // Функция для изменения состояния авторизации
-  // const handleLogin = () => {
-  //   setIsLoggedIn(true);
-  // };
-
-  // // Функция для выхода из системы
-  // const handleLogout = () => {
-  //   setIsLoggedIn(false);
-  // };
-
   return (
     <div>
-      {/* {!isLoggedIn && <AuthForm onLogin={handleLogin} />} */}
       <SingUp />
+      <SingIn />
+      <AuthDetails />
       {psychologists.map(psychologist => (
         <Psychologist key={psychologist.id} psychologist={psychologist} />
       ))}
-
-      {/* {isLoggedIn && <button onClick={handleLogout}>Logout</button>} */}
     </div>
   );
 };
