@@ -1,36 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { fetchPsychologists } from '../../services/api';
-import Psychologist from 'components/psychologist/Psychologist';
-// import AuthForm from 'components/authForm/AuthForm';
-import SingUp from 'components/auth/SingUp';
-import SingIn from 'components/auth/SindIn';
-import AuthDetails from 'components/auth/AuthDetails';
+// import React, { Suspense, lazy } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import SharedLayout from 'components/SharedLayout/SharedLayout';
+import Home from 'pages/Home/Home';
+import Psychologist from 'pages/psychologist/Psychologists';
+import FavoritePsychologists from 'pages/favorites/FavoritePsychologists';
+
+// import { LoaderComponent } from '../../helpers/Loader';
+// const Home = lazy(() => import('pages/Home/Home'));
+// const Psychologists = lazy(() => import('pages/psychologist/Psychologists'));
+// const Favorites = lazy(() => import('pages/favorites/Favorites'));
 
 export const App = () => {
-  const [psychologists, setPsychologists] = useState([]);
-
-  useEffect(() => {
-    fetchPsychologists()
-      .then(data => {
-        if (data) {
-          setPsychologists(data);
-        } else {
-          console.log('Произошла ошибка при загрузке данных о психологах');
-        }
-      })
-      .catch(error => {
-        console.error('Ошибка при загрузке данных о психологах:', error);
-      });
-  }, []);
-
   return (
-    <div>
-      <SingUp />
-      <SingIn />
-      <AuthDetails />
-      {psychologists.map(psychologist => (
-        <Psychologist key={psychologist.id} psychologist={psychologist} />
-      ))}
-    </div>
+    <Routes>
+      <Route path="/" element={<SharedLayout />}>
+        <Route index element={<Home />} />
+        <Route path="/psychologyst" element={<Psychologist />} />
+        <Route path="/favorites" element={<FavoritePsychologists />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Route>
+    </Routes>
   );
 };

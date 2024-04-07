@@ -1,3 +1,5 @@
+// services/api.js
+
 import axios from 'axios';
 
 const client = axios.create({
@@ -9,10 +11,9 @@ export const fetchPsychologists = async () => {
   try {
     const response = await client.get('/psychologs.json');
     const psychologistsData = response.data;
-    // Возвращаем данные о психологах
-    return psychologistsData;
+    return psychologistsData; // Возвращаем данные
   } catch (error) {
     console.error('Error fetching psychologists:', error);
-    return null;
+    throw error; // Бросаем ошибку, если произошла ошибка при запросе
   }
 };
