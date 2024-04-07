@@ -1,7 +1,13 @@
+// components/Psychologist.js
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-const Psychologist = ({ psychologist, onToggleFavorite }) => {
+const Psychologist = ({
+  psychologist,
+  isFavorite,
+  onAddToFavorite,
+  onRemoveFromFavorite,
+}) => {
   const {
     name,
     avatar_url,
@@ -26,15 +32,16 @@ const Psychologist = ({ psychologist, onToggleFavorite }) => {
       <p>Specialization: {specialization}</p>
       <p>Initial consultation: {initial_consultation}</p>
       <p>About: {about}</p>
-      <button onClick={() => onToggleFavorite(psychologist)}>
-        {psychologist.isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-      </button>
+      {/* При клике на кнопку вызываем соответствующую функцию */}
+      {isFavorite ? (
+        <button onClick={onRemoveFromFavorite}>Remove from Favorites</button>
+      ) : (
+        <button onClick={onAddToFavorite}>Add to Favorites</button>
+      )}
       <h3>Reviews:</h3>
       <ul>
         {reviews.map(review => (
           <li key={uuidv4()}>
-            {' '}
-            {/* Генерация уникального ключа */}
             <p>Reviewer: {review.reviewer}</p>
             <p>Rating: {review.rating}</p>
             <p>Comment: {review.comment}</p>

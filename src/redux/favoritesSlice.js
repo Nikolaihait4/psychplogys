@@ -9,21 +9,17 @@ const favoritesSlice = createSlice({
   name: 'favorites',
   initialState,
   reducers: {
-    toggleFavorite: (state, action) => {
-      const existingIndex = state.favorites.findIndex(
-        psychologist => psychologist.id === action.payload.id
-      );
-      if (existingIndex !== -1) {
-        // Если психолог уже в избранном, удаляем его
-        state.favorites.splice(existingIndex, 1);
-      } else {
-        // Если психолога нет в избранном, добавляем его
-        state.favorites.push(action.payload);
-      }
-      // Обновляем данные в локальном хранилище
+    addToFavorites(state, action) {
+      state.favorites.push(action.payload);
       localStorage.setItem('favorites', JSON.stringify(state.favorites));
     },
-    initializeFavorites: state => {
+    removeFromFavorites(state, action) {
+      state.favorites = state.favorites.filter(
+        favorite => favorite.id !== action.payload.id
+      );
+      localStorage.setItem('favorites', JSON.stringify(state.favorites));
+    },
+    initializeFavorites(state) {
       const favorites = localStorage.getItem('favorites');
       if (favorites) {
         state.favorites = JSON.parse(favorites);
@@ -32,5 +28,7 @@ const favoritesSlice = createSlice({
   },
 });
 
-export const { toggleFavorite, initializeFavorites } = favoritesSlice.actions;
+export const { addToFavorites, removeFromFavorites, initializeFavorites } =
+  favoritesSlice.actions;
+
 export default favoritesSlice.reducer;

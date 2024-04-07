@@ -1,5 +1,5 @@
-// pages/Psychologists.js
-import React, { useEffect } from 'react';
+// pages/Psychologists.jsx
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Psychologist from '../../components/psychologist/Psychologist';
 import { fetchPsychologists } from '../../services/api';
@@ -8,15 +8,21 @@ import {
   fetchPsychologistsSuccess,
   fetchPsychologistsFailure,
 } from '../../redux/psychologistsSlice';
-import { toggleFavorite } from '../../redux/favoritesSlice';
+import {
+  addToFavorites,
+  removeFromFavorites,
+} from '../../redux/favoritesSlice';
 import { v4 as uuidv4 } from 'uuid';
-import FavoritePsychologists from 'pages/favorites/FavoritePsychologists';
 
 const Psychologists = () => {
   const dispatch = useDispatch();
   const psychologists = useSelector(state => state.psychologists.psychologists);
   const isLoading = useSelector(state => state.psychologists.isLoading);
   const error = useSelector(state => state.psychologists.error);
+  const favoritePsychologists = useSelector(state => state.favorites.favorites);
+
+  // Создаем словарь, где ключами будут id психологов, а значениями - true/false в зависимости от того, добавлены они в избранное или нет
+  const [favoriteMap, setFavoriteMap] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,16 +39,31 @@ const Psychologists = () => {
     fetchData();
   }, [dispatch]);
 
-  const handleToggleFavorite = psychologist => {
-    const isFavorite = FavoritePsychologists.some(
-      fav => fav.id === psychologist.id
-    );
+  // При изменении списка избранных психологов обновляем favoriteMap
+  useEffect(() => {
+    const newFavoriteMap = {};
+    favoritePsychologists.forEach(psychologist => {
+      newFavoriteMap[psychologist.id] = true;
+    });
+    setFavoriteMap(newFavoriteMap);
+  }, [favoritePsychologists]);
 
-    if (isFavorite) {
-      dispatch(toggleFavorite(psychologist)); // Удаляем из избранных, если уже был добавлен
-    } else {
-      dispatch(toggleFavorite(psychologist)); // Добавляем в избранные, если не был добавлен ранее
-    }
+  // Функция для добавления психолога в избранное
+  const handleAddToFavorite = psychologist => {
+    dispatch(addToFavorites(psychologist));
+    setFavoriteMap(prevMap => ({
+      ...prevMap,
+      [psychologist.id]: true,
+    }));
+  };
+
+  // Функция для удаления психолога из избранного
+  const handleRemoveFromFavorite = psychologist => {
+    dispatch(removeFromFavorites(psychologist));
+    setFavoriteMap(prevMap => ({
+      ...prevMap,
+      [psychologist.id]: false,
+    }));
   };
 
   if (isLoading) {
@@ -59,7 +80,9 @@ const Psychologists = () => {
         <Psychologist
           key={uuidv4()}
           psychologist={psychologist}
-          onToggleFavorite={() => handleToggleFavorite(psychologist)}
+          isFavorite={favoriteMap[psychologist.id]} // Передаем isFavorite
+          onAddToFavorite={() => handleAddToFavorite(psychologist)} // Передаем функцию для добавления в избранное
+          onRemoveFromFavorite={() => handleRemoveFromFavorite(psychologist)} // Передаем функцию для удаления из избранного
         />
       ))}
     </div>
