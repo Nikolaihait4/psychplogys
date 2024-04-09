@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/psychplogys/static/css/main.cd507947.css",
-    "main.js": "/psychplogys/static/js/main.0ae99db8.js",
+    "main.js": "/psychplogys/static/js/main.baf7e032.js",
     "index.html": "/psychplogys/index.html",
     "main.cd507947.css.map": "/psychplogys/static/css/main.cd507947.css.map",
-    "main.0ae99db8.js.map": "/psychplogys/static/js/main.0ae99db8.js.map"
+    "main.baf7e032.js.map": "/psychplogys/static/js/main.baf7e032.js.map"
   },
   "entrypoints": [
     "static/css/main.cd507947.css",
-    "static/js/main.0ae99db8.js"
+    "static/js/main.baf7e032.js"
   ]
 }
