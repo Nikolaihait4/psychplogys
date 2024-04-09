@@ -1,9 +1,17 @@
+// pages/FavoritePsychologists.jsx
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Psychologist from '../../components/psychologist/Psychologist';
+import { removeFromFavorites } from '../../redux/favoritesSlice';
 
 const FavoritePsychologists = () => {
+  const dispatch = useDispatch();
   const favoritePsychologists = useSelector(state => state.favorites.favorites);
+
+  // Функция для удаления психолога из избранного
+  const handleRemoveFromFavorite = psychologist => {
+    dispatch(removeFromFavorites(psychologist));
+  };
 
   return (
     <div>
@@ -12,7 +20,8 @@ const FavoritePsychologists = () => {
         <Psychologist
           key={psychologist.id}
           psychologist={psychologist}
-          isFavorite={true} // Установим значение isFavorite как true, потому что это страница избранных
+          isFavorite={true}
+          onRemoveFromFavorite={() => handleRemoveFromFavorite(psychologist)}
         />
       ))}
     </div>

@@ -1,3 +1,4 @@
+// SindIn.jsx
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import auth from 'services/firebase';
