@@ -4,12 +4,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import styles from './SharedLayout.module.css';
 import useAuth from '../../services/useAuth';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  openSignIn,
-  openSignUp,
-  closeForms,
-  selectAuthState,
-} from '../../redux/authSlice';
+import { openSignIn, openSignUp, selectAuthState } from '../../redux/authSlice';
 import SignIn from '../auth/SindIn';
 import SignUp from '../auth/SingUp';
 
