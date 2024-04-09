@@ -1,57 +1,75 @@
-// SingUp.jsx
+// SignUp.jsx
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import React, { useState } from 'react';
+import React from 'react';
 import auth from 'services/firebase';
+import AuthDetails from './AuthDetails';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
-const SingUp = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [copyPassword, setCopyPassword] = useState('');
-  const [error, setError] = useState('');
-  function register(e) {
-    e.preventDefault();
-    if (copyPassword !== password) {
-      setError("Password didn't match");
-      return;
-    }
+const SignUpSchema = Yup.object().shape({
+  email: Yup.string().email('Invalid email').required('Required'),
+  password: Yup.string().required('Required'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .required('Required'),
+});
+
+const SignUp = () => {
+  const handleSignUp = (values, { setSubmitting, setFieldError }) => {
+    const { email, password } = values;
+
     createUserWithEmailAndPassword(auth, email, password)
-      .then(user => {
-        console.log(user);
-        setError('');
-        setEmail('');
-        setPassword('');
-        setCopyPassword('');
+      .then(userCredential => {
+        // Успешная регистрация
+        const user = userCredential.user;
+        console.log('User signed up:', user);
+        // Очистка полей формы
+        setSubmitting(false);
       })
-      .catch(error => console.log(error));
-  }
+      .catch(error => {
+        // Обработка ошибок при регистрации
+        console.error('Sign up error:', error.message);
+        setSubmitting(false);
+        setFieldError('general', error.message);
+      });
+  };
 
   return (
     <div>
-      <form onSubmit={register}>
-        <h2>Create an account</h2>
-        <input
-          placeholder="Please enter your email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          type="email"
-        />
-        <input
-          placeholder="Please enter your password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          type="password"
-        />
-        <input
-          placeholder="Please enter your password again"
-          value={copyPassword}
-          onChange={e => setCopyPassword(e.target.value)}
-          type="password"
-        />
-        <button>Create</button>
-        {error ? <p style={{ color: 'red' }}>{error}</p> : ''}
-      </form>
+      <h2>Registration</h2>
+      <Formik
+        initialValues={{ email: '', password: '', confirmPassword: '' }}
+        validationSchema={SignUpSchema}
+        onSubmit={handleSignUp}
+      >
+        {({ isSubmitting }) => (
+          <Form>
+            <div>
+              <Field type="email" name="email" placeholder="Email" />
+              <ErrorMessage name="email" component="div" />
+            </div>
+            <div>
+              <Field type="password" name="password" placeholder="Password" />
+              <ErrorMessage name="password" component="div" />
+            </div>
+            <div>
+              <Field
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+              />
+              <ErrorMessage name="confirmPassword" component="div" />
+            </div>
+            <button type="submit" disabled={isSubmitting}>
+              Sign Up
+            </button>
+            <ErrorMessage name="general" component="div" />
+          </Form>
+        )}
+      </Formik>
+      <AuthDetails />
     </div>
   );
 };
 
-export default SingUp;
+export default SignUp;

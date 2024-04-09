@@ -1,13 +1,35 @@
+// SharedLayout.jsx
 import React from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import styles from './SharedLayout.module.css';
+import useAuth from '../../services/useAuth';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  openSignIn,
+  openSignUp,
+  closeForms,
+  selectAuthState,
+} from '../../redux/authSlice';
+import SignIn from '../auth/SindIn';
+import SignUp from '../auth/SingUp';
 
 const SharedLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { authUser, userSignOut } = useAuth();
+  const { showSignIn, showSignUp } = useSelector(selectAuthState);
+  const dispatch = useDispatch();
 
   const handleCatalogClick = () => {
-    navigate('/catalog', { replace: true });
+    navigate('/psychologyst', { replace: true });
+  };
+
+  const handleSignInClick = () => {
+    dispatch(openSignIn());
+  };
+
+  const handleSignUpClick = () => {
+    dispatch(openSignUp());
   };
 
   return (
@@ -30,16 +52,34 @@ const SharedLayout = () => {
         >
           Psychologists
         </NavLink>
-        <NavLink
-          to="/favorites"
-          className={
-            location.pathname === '/favorites' ? styles.active : styles.navLink
-          }
-        >
-          Favorites
-        </NavLink>
+        {authUser && (
+          <NavLink
+            to="/favorites"
+            className={
+              location.pathname === '/favorites'
+                ? styles.active
+                : styles.navLink
+            }
+          >
+            Favorites
+          </NavLink>
+        )}
+        {authUser ? (
+          <button onClick={userSignOut}>Sign Out</button>
+        ) : (
+          <div>
+            <button onClick={handleSignInClick}>Sign In</button>
+            <button onClick={handleSignUpClick}>Sign Up</button>
+          </div>
+        )}
       </header>
       <Outlet />
+      {!authUser && (
+        <div>
+          {showSignIn && <SignIn />}
+          {showSignUp && <SignUp />}
+        </div>
+      )}
     </div>
   );
 };
