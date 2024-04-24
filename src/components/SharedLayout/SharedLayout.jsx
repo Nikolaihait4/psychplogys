@@ -4,7 +4,13 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import styles from './SharedLayout.module.css';
 import useAuth from '../../services/useAuth';
 import { useDispatch, useSelector } from 'react-redux';
-import { openSignIn, openSignUp, selectAuthState } from '../../redux/authSlice';
+import {
+  openSignIn,
+  openSignUp,
+  closeForms,
+  selectAuthState,
+} from '../../redux/authSlice'; // Импортируем closeForms
+import Modal from '../modal/Modal'; // Импортируем компонент Modal
 import SignIn from '../auth/SindIn';
 import SignUp from '../auth/SingUp';
 
@@ -17,6 +23,10 @@ const SharedLayout = () => {
 
   const handleCatalogClick = () => {
     navigate('/psychologyst', { replace: true });
+  };
+
+  const handleModalClose = () => {
+    dispatch(closeForms()); // Закрываем обе модальные формы
   };
 
   const handleSignInClick = () => {
@@ -71,8 +81,17 @@ const SharedLayout = () => {
       <Outlet />
       {!authUser && (
         <div>
-          {showSignIn && <SignIn />}
-          {showSignUp && <SignUp />}
+          {/* Передаем функцию закрытия модального окна в компонент Modal */}
+          {showSignIn && (
+            <Modal onClose={handleModalClose}>
+              <SignIn />
+            </Modal>
+          )}
+          {showSignUp && (
+            <Modal onClose={handleModalClose}>
+              <SignUp />
+            </Modal>
+          )}
         </div>
       )}
     </div>

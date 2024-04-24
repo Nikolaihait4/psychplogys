@@ -1,30 +1,29 @@
 // SignIn.jsx
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import React from 'react';
 import auth from 'services/firebase';
 import AuthDetails from './AuthDetails';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
 const SignInSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Required'),
   password: Yup.string().required('Required'),
 });
 
-const SignIn = () => {
+const SignIn = ({ onClose }) => {
   const handleSignIn = (values, { setSubmitting, setFieldError }) => {
     const { email, password } = values;
 
     signInWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
-        // Успешный вход
         const user = userCredential.user;
         console.log('User signed in:', user);
-        // Очистка полей формы
         setSubmitting(false);
+        onClose(); // Закрываем модальное окно после успешного входа
       })
       .catch(error => {
-        // Обработка ошибок при входе
         console.error('Sign in error:', error.message);
         setSubmitting(false);
         setFieldError('general', error.message);
