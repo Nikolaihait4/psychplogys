@@ -1,4 +1,3 @@
-// pages/Psychologists.jsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Psychologist from '../../components/psychologist/Psychologist';
@@ -21,8 +20,8 @@ const Psychologists = () => {
   const error = useSelector(state => state.psychologists.error);
   const favoritePsychologists = useSelector(state => state.favorites.favorites);
 
-  // Создаем словарь, где ключами будут id психологов, а значениями - true/false в зависимости от того, добавлены они в избранное или нет
   const [favoriteMap, setFavoriteMap] = useState({});
+  const [sortCriteria, setSortCriteria] = useState('name'); // Default sort criteria
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,7 +38,6 @@ const Psychologists = () => {
     fetchData();
   }, [dispatch]);
 
-  // При изменении списка избранных психологов обновляем favoriteMap
   useEffect(() => {
     const newFavoriteMap = {};
     favoritePsychologists.forEach(psychologist => {
@@ -48,7 +46,6 @@ const Psychologists = () => {
     setFavoriteMap(newFavoriteMap);
   }, [favoritePsychologists]);
 
-  // Функция для добавления психолога в избранное
   const handleAddToFavorite = psychologist => {
     dispatch(addToFavorites(psychologist));
     setFavoriteMap(prevMap => ({
@@ -57,13 +54,24 @@ const Psychologists = () => {
     }));
   };
 
-  // Функция для удаления психолога из избранного
   const handleRemoveFromFavorite = psychologist => {
     dispatch(removeFromFavorites(psychologist));
     setFavoriteMap(prevMap => ({
       ...prevMap,
       [psychologist.id]: false,
     }));
+  };
+
+  const handleSortChange = event => {
+    setSortCriteria(event.target.value);
+  };
+
+  const sortPsychologists = () => {
+    return psychologists.slice().sort((a, b) => {
+      if (a[sortCriteria] < b[sortCriteria]) return -1;
+      if (a[sortCriteria] > b[sortCriteria]) return 1;
+      return 0;
+    });
   };
 
   if (isLoading) {
@@ -76,13 +84,21 @@ const Psychologists = () => {
 
   return (
     <div>
-      {psychologists.map(psychologist => (
+      <div>
+        <label htmlFor="sort">Sort by:</label>
+        <select id="sort" value={sortCriteria} onChange={handleSortChange}>
+          <option value="name">Name</option>
+          <option value="price_per_hour">Price per hour</option>
+          <option value="rating">Rating</option>
+        </select>
+      </div>
+      {sortPsychologists().map(psychologist => (
         <Psychologist
           key={uuidv4()}
           psychologist={psychologist}
-          isFavorite={favoriteMap[psychologist.id]} // Передаем isFavorite
-          onAddToFavorite={() => handleAddToFavorite(psychologist)} // Передаем функцию для добавления в избранное
-          onRemoveFromFavorite={() => handleRemoveFromFavorite(psychologist)} // Передаем функцию для удаления из избранного
+          isFavorite={favoriteMap[psychologist.id]}
+          onAddToFavorite={() => handleAddToFavorite(psychologist)}
+          onRemoveFromFavorite={() => handleRemoveFromFavorite(psychologist)}
         />
       ))}
     </div>
